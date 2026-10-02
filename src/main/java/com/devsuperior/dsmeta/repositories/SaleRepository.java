@@ -2,6 +2,7 @@ package com.devsuperior.dsmeta.repositories;
 
 import com.devsuperior.dsmeta.dto.SaleReportDTO;
 import com.devsuperior.dsmeta.projections.SaleReportProjection;
+import com.devsuperior.dsmeta.projections.SaleSummaryProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,10 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
             "WHERE obj.date BETWEEN :min_date AND :max_date " +
             "AND UPPER(obj.seller.name) LIKE CONCAT('%', UPPER(:name), '%')")
     Page<SaleReportProjection> getReport(LocalDate max_date, LocalDate min_date, String name, Pageable pageable);
+
+    @Query(value = "SELECT SUM(obj.amount) AS total, obj.seller.name AS sellerName " +
+            "FROM Sale obj INNER JOIN obj.seller " +
+            "WHERE obj.date BETWEEN :min_date AND :max_date " +
+            "GROUP BY obj.seller.name", countQuery = "SELECT COUNT(DISTINCT obj.seller.name) FROM Sale obj WHERE obj.date BETWEEN :min_date AND :max_date")
+    Page<SaleSummaryProjection> getSummary(LocalDate max_date, LocalDate min_date, Pageable pageable);
 }

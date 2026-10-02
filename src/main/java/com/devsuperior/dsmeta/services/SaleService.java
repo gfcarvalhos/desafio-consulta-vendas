@@ -10,6 +10,8 @@ import com.devsuperior.dsmeta.dto.SaleReportDTO;
 import com.devsuperior.dsmeta.projections.SaleReportProjection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.devsuperior.dsmeta.dto.SaleMinDTO;
@@ -28,15 +30,14 @@ public class SaleService {
 		return new SaleMinDTO(entity);
 	}
 
-    public List<SaleReportDTO> getReport(String minDate, String maxDate, String name) {
+    public Page<SaleReportDTO> getReport(String minDate, String maxDate, String name, Pageable pageable) {
         LocalDate today = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
 
         LocalDate max_date = maxDate != null ? LocalDate.parse(maxDate) : today;
         LocalDate min_date = minDate != null ? LocalDate.parse(minDate) : today.minusYears(1L);
-        name = name != null ? name : "";
 
-        List<SaleReportProjection> result = repository.getReport(max_date, min_date, name);
+        Page<SaleReportProjection> result = repository.getReport(max_date, min_date, name, pageable);
 
-        return result.stream().map(SaleReportDTO::new).toList();
+        return result.map(SaleReportDTO::new);
     }
 }

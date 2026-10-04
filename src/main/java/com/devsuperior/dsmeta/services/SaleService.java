@@ -43,14 +43,14 @@ public class SaleService {
         return result.map(SaleReportDTO::new);
     }
 
-    public Page<SaleSummaryDTO> getSummary(String minDate, String maxDate, Pageable pageable) {
+    public List<SaleSummaryDTO> getSummary(String minDate, String maxDate) {
         LocalDate today = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
 
         LocalDate max_date = maxDate != null ? LocalDate.parse(maxDate) : today;
         LocalDate min_date = minDate != null ? LocalDate.parse(minDate) : today.minusYears(1L);
 
-        Page<SaleSummaryProjection> result = repository.getSummary(max_date, min_date, pageable);
+        List<SaleSummaryProjection> result = repository.getSummary(max_date, min_date);
 
-        return result.map(SaleSummaryDTO::new);
+        return result.stream().map(SaleSummaryDTO::new).toList();
     }
 }

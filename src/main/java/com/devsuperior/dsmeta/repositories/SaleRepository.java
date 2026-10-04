@@ -25,5 +25,5 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
             "FROM Sale obj INNER JOIN obj.seller " +
             "WHERE obj.date BETWEEN :min_date AND :max_date " +
             "GROUP BY obj.seller.name", countQuery = "SELECT COUNT(DISTINCT obj.seller.name) FROM Sale obj WHERE obj.date BETWEEN :min_date AND :max_date")
-    Page<SaleSummaryProjection> getSummary(LocalDate max_date, LocalDate min_date, Pageable pageable);
+    List<SaleSummaryProjection> getSummary(LocalDate max_date, LocalDate min_date);
 }
